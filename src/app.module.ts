@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 
 import { configModule } from './configure.root';
+import { TokenModule } from './token/token.module';
 
 @Module({
     imports: [
@@ -16,6 +17,8 @@ import { configModule } from './configure.root';
             useNewUrlParser: true,
             useUnifiedTopology: true,
         }),
+
+        TokenModule,
     ],
 })
 export class AppModule {}
