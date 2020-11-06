@@ -6,11 +6,13 @@ import { UserModule } from 'src/user/user.module';
 import { configModule } from 'src/configure.root';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { TokenModule } from 'src/token/token.module';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
     imports: [
         UserModule,
-        // TokenModule,
+        TokenModule,
         configModule,
         PassportModule.register({ defaultStrategy:  'jwt' }),
         JwtModule.register({
@@ -18,7 +20,7 @@ import { AuthController } from './auth.controller';
             signOptions: { expiresIn: '1d' },
         }),
     ],
-    providers: [AuthService],
+    providers: [AuthService, JwtStrategy],
     controllers: [AuthController],
 })
 export class AuthModule {}
