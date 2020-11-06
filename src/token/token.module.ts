@@ -4,10 +4,10 @@ import { TokenService } from './token.service';
 import { TokenSchema } from './schemas/user-token.schema';
 
 @Module({
-  providers: [TokenService],
-  exports: [TokenService],
-  imports: [
-    MongooseModule.forFeature([{ name: 'Token', schema: TokenSchema }])
-  ],
+    providers: [TokenService],
+    exports: [TokenService],
+    imports: [
+        MongooseModule.forFeature([{ name: 'Token', schema: TokenSchema }]),
+    ],
 })
 export class TokenModule {}

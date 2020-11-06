@@ -16,6 +16,7 @@ import { TokenModule } from './token/token.module';
         MongooseModule.forRoot(process.env.MONGODB_WRITE_CONNECTION_STRING, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
+            useCreateIndex: true,
         }),
 
         TokenModule,
