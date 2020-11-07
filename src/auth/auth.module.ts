@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TokenModule } from 'src/token/token.module';
 import { JwtStrategy } from './jwt.strategy';
+import { MailerService } from 'src/mailer/mailer.service';
 
 @Module({
     imports: [
@@ -19,8 +20,9 @@ import { JwtStrategy } from './jwt.strategy';
             secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '1d' },
         }),
+        MailerService,
     ],
-    providers: [AuthService, JwtStrategy],
+    providers: [AuthService, JwtStrategy, MailerService],
     controllers: [AuthController],
 })
 export class AuthModule {}
