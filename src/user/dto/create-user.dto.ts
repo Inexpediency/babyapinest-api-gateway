@@ -11,6 +11,6 @@ export class CreateUserDto {
     readonly profession: string;
     readonly searchField: string;
     readonly phone: string;
-    readonly role: Array<string>;
+    readonly roles: Array<string>;
     readonly password: string;
 }
