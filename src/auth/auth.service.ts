@@ -19,6 +19,9 @@ import moment from 'moment';
 import {ConfigService} from '@nestjs/config';
 import { ITokenPayload } from './interfaces/token-payload.interface';
 import { IReadableUser } from 'src/user/interfaces/readable-user.interface';
+import * as bcrypt from 'bcrypt';
+import _ from 'lodash';
+import { userSensitiveFieldsEnum } from 'src/user/enums/protected-fields.enum';
 
 @Injectable()
 export class AuthService {
@@ -45,7 +48,16 @@ export class AuthService {
 
     async signIn(email, password): Promise<IReadableUser> {
         const user = await this.userService.findByEmail(email);
-        return;
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            const token = await this.signUser(user);
+            const readableUser = user.toObject() as IReadableUser;
+            readableUser.accessToken = token;
+
+            return _.omit<any>(readableUser, Object.values(userSensitiveFieldsEnum)) as IReadableUser;
+        }
+
+        throw new BadRequestException('Invalid credentials');
     }
 
     async signUser(user: IUser, withStatusCheck: boolean = true): Promise<string> {
