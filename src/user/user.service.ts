@@ -44,5 +44,5 @@ export class UserService {
 
     async update(id: string, payload: Partial<IUser>) {
         return this.userModel.updateOne({ _id: id }, payload);
-    } 
+    }
 }

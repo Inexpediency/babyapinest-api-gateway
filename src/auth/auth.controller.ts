@@ -1,8 +1,15 @@
-import { Body, Controller, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Patch,
+    Post,
+    Query,
+    ValidationPipe,
+} from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
-import {ConfirmAccountDto} from './dto/confirm-account-dto';
+import { ConfirmAccountDto } from './dto/confirm-account-dto';
 import { IReadableUser } from 'src/user/interfaces/readable-user.interface';
 import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -28,13 +35,15 @@ export class AuthController {
     }
 
     @Post('/signIn')
-    async signIn(@Body(ValidationPipe) signInDto: SignInDto): Promise<IReadableUser> {
+    async signIn(
+        @Body(ValidationPipe) signInDto: SignInDto,
+    ): Promise<IReadableUser> {
         return this.authService.signIn(signInDto);
     }
 
     @Post('/forgotPassword')
     async forgotPassword(
-        @Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto
+        @Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto,
     ): Promise<void> {
         return this.authService.forgotPassword(forgotPasswordDto);
     }
@@ -42,7 +51,7 @@ export class AuthController {
     @Patch('/changePassword')
     async changePassword(
         @GetUser() user: IUser,
-        @Body(ValidationPipe) changePasswordDto: ChangePasswordDto
+        @Body(ValidationPipe) changePasswordDto: ChangePasswordDto,
     ): Promise<boolean> {
         return this.authService.changePassword(user._id, changePasswordDto);
     }

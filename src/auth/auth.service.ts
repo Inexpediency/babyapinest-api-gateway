@@ -16,7 +16,7 @@ import { roleEnum } from '../user/enums/role.enum';
 import { MailerService } from '../mailer/mailer.service';
 import { statusEnum } from '../user/enums/status.enum';
 import moment from 'moment';
-import {ConfigService} from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { ITokenPayload } from './interfaces/token-payload.interface';
 import { IReadableUser } from 'src/user/interfaces/readable-user.interface';
 import * as bcrypt from 'bcrypt';
@@ -57,14 +57,20 @@ export class AuthService {
             const readableUser = user.toObject() as IReadableUser;
             readableUser.accessToken = token;
 
-            return _.omit<any>(readableUser, Object.values(userSensitiveFieldsEnum)) as IReadableUser;
+            return _.omit<any>(
+                readableUser,
+                Object.values(userSensitiveFieldsEnum),
+            ) as IReadableUser;
         }
 
         throw new BadRequestException('Invalid credentials');
     }
 
-    async signUser(user: IUser, withStatusCheck: boolean = true): Promise<string> {
-        if (withStatusCheck && (user.status !== statusEnum.active)) {
+    async signUser(
+        user: IUser,
+        withStatusCheck: boolean = true,
+    ): Promise<string> {
+        if (withStatusCheck && user.status !== statusEnum.active) {
             throw new MethodNotAllowedException();
         }
 
@@ -72,9 +78,11 @@ export class AuthService {
             _id: user._id,
             status: user.status,
             roles: user.roles,
-        }
+        };
         const token = await this.generateToken(tokenPayload);
-        const expiresAt = moment().add(1, 'day').toISOString();
+        const expiresAt = moment()
+            .add(1, 'day')
+            .toISOString();
 
         await this.saveToken({
             token,
@@ -99,7 +107,10 @@ export class AuthService {
         throw new BadRequestException('Confirmation error');
     }
 
-    private async generateToken(data: ITokenPayload, options?: SignOptions): Promise<string> {
+    private async generateToken(
+        data: ITokenPayload,
+        options?: SignOptions,
+    ): Promise<string> {
         return this.jwtService.sign(data, options);
     }
 
@@ -131,25 +142,31 @@ export class AuthService {
             text: `
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please confirm your email address <a href="${confirmLink}">here</a>.</p>
-            `
-        })
+            `,
+        });
     }
 
-    async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
-        const password = await this.userService.hashPassword(changePasswordDto.password);
+    async changePassword(
+        userId: string,
+        changePasswordDto: ChangePasswordDto,
+    ): Promise<boolean> {
+        const password = await this.userService.hashPassword(
+            changePasswordDto.password,
+        );
 
-        await this.userService.update(userId, {password});
+        await this.userService.update(userId, { password });
         await this.tokenService.deleteAll(userId);
         return true;
     }
 
-
     async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
-        const user = await this.userService.findByEmail(forgotPasswordDto.email);
+        const user = await this.userService.findByEmail(
+            forgotPasswordDto.email,
+        );
         if (!user) {
             throw new BadRequestException('Invalid email');
         }
-        
+
         const token = await this.signUser(user);
         const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
 
@@ -160,7 +177,7 @@ export class AuthService {
             text: `
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please use this <a href="${forgotLink}">link</a> to reset your password.</p>
-            `
-        })
+            `,
+        });
     }
 }

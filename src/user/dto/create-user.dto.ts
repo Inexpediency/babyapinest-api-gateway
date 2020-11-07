@@ -1,4 +1,11 @@
-import { IsEmail, IsString, IsNotEmpty, Matches, IsOptional, IsEnum } from 'class-validator';
+import {
+    IsEmail,
+    IsString,
+    IsNotEmpty,
+    Matches,
+    IsOptional,
+    IsEnum,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateAddressDto } from './create-address.dto';
 import { genderEnum } from '../enums/gender.enum';

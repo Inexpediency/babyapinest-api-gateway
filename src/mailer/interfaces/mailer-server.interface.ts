@@ -1,3 +1,3 @@
 export interface IMailerServer {
-    sendMail(payload: string): void
+    sendMail(payload: string): void;
 }

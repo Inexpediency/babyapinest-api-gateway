@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {ConfigService} from '@nestjs/config';
-import {MailDto} from './dto/mail.dto';
+import { ConfigService } from '@nestjs/config';
+import { MailDto } from './dto/mail.dto';
 
 @Injectable()
 export class MailerService {
@@ -8,6 +8,5 @@ export class MailerService {
 
     send(mailDto: MailDto): void {
         const mailerServerUrl = this.configService.get<string>('MAILER_SERVER');
-        
     }
 }
