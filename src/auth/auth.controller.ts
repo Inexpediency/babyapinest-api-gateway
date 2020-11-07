@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Logger,
     Patch,
     Post,
     Query,
@@ -20,17 +21,23 @@ import { IUser } from 'src/user/interfaces/user.interface';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+    private readonly logger: Logger = new Logger(AuthController.name);
+
     constructor(private readonly authService: AuthService) {}
 
     @Post('/signUp')
     async signUp(
         @Body(ValidationPipe) createUserDto: CreateUserDto,
     ): Promise<boolean> {
+        this.logger.log(`Sign up with data: ${JSON.stringify(createUserDto)}`);
+
         return this.authService.signUp(createUserDto);
     }
 
     @Post('/confirm')
     async confirm(@Query(ValidationPipe) query: ConfirmAccountDto) {
+        this.logger.log(`Confirm mail with data: ${JSON.stringify(query)}`);
+
         await this.authService.confirm(query.token);
     }
 
@@ -38,6 +45,8 @@ export class AuthController {
     async signIn(
         @Body(ValidationPipe) signInDto: SignInDto,
     ): Promise<IReadableUser> {
+        this.logger.log(`Sign in with data: ${JSON.stringify(signInDto)}`);
+
         return this.authService.signIn(signInDto);
     }
 
@@ -45,6 +54,12 @@ export class AuthController {
     async forgotPassword(
         @Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto,
     ): Promise<void> {
+        this.logger.log(
+            `Recovery frogot password with data: ${JSON.stringify(
+                forgotPasswordDto,
+            )}`,
+        );
+
         return this.authService.forgotPassword(forgotPasswordDto);
     }
 
@@ -53,6 +68,10 @@ export class AuthController {
         @GetUser() user: IUser,
         @Body(ValidationPipe) changePasswordDto: ChangePasswordDto,
     ): Promise<boolean> {
+        this.logger.log(
+            `Change password with data: ${JSON.stringify(changePasswordDto)}`,
+        );
+
         return this.authService.changePassword(user._id, changePasswordDto);
     }
 }
