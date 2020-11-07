@@ -24,6 +24,7 @@ import _ from 'lodash';
 import { userSensitiveFieldsEnum } from 'src/user/enums/protected-fields.enum';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -133,6 +134,15 @@ export class AuthService {
             `
         })
     }
+
+    async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
+        const password = await this.userService.hashPassword(changePasswordDto.password);
+
+        await this.userService.update(userId, {password});
+        await this.tokenService.deleteAll(userId);
+        return true;
+    }
+
 
     async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
         const user = await this.userService.findByEmail(forgotPasswordDto.email);

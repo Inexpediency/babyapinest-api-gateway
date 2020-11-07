@@ -6,6 +6,9 @@ import {ConfirmAccountDto} from './dto/confirm-account-dto';
 import { IReadableUser } from 'src/user/interfaces/readable-user.interface';
 import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { GetUser } from 'src/components/decorators/get-user.decorator';
+import { IUser } from 'src/user/interfaces/user.interface';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -34,5 +37,13 @@ export class AuthController {
         @Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto
     ): Promise<void> {
         return this.authService.forgotPassword(forgotPasswordDto);
+    }
+
+    @Patch('/changePassword')
+    async changePassword(
+        @GetUser() user: IUser,
+        @Body(ValidationPipe) changePasswordDto: ChangePasswordDto
+    ): Promise<boolean> {
+        return this.authService.changePassword(user._id, changePasswordDto);
     }
 }
