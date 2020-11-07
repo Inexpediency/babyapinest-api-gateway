@@ -1,8 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
+    const logger = new Logger(bootstrap.name);
+
     const app = await NestFactory.create(AppModule);
 
     const options = new DocumentBuilder()
@@ -14,5 +17,6 @@ async function bootstrap() {
     SwaggerModule.setup('aboutapi', app, document);
 
     await app.listen(process.env.PORT);
+    logger.log('Babyapinest API Gateway service has started!');
 }
 bootstrap();
