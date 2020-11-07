@@ -22,6 +22,7 @@ import { IReadableUser } from 'src/user/interfaces/readable-user.interface';
 import * as bcrypt from 'bcrypt';
 import _ from 'lodash';
 import { userSensitiveFieldsEnum } from 'src/user/enums/protected-fields.enum';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -128,6 +129,26 @@ export class AuthService {
             text: `
                 <h3>Hello ${user.firstName}!</h3>
                 <p>Please confirm your email address <a href="${confirmLink}">here</a>.</p>
+            `
+        })
+    }
+
+    async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+        const user = await this.userService.findByEmail(forgotPasswordDto.email);
+        if (!user) {
+            throw new BadRequestException('Invalid email');
+        }
+        
+        const token = await this.signUser(user);
+        const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
+
+        await this.mailerService.send({
+            from: this.configService.get<string>('SITE_NAME'),
+            to: user.email,
+            subject: 'Verify User',
+            text: `
+                <h3>Hello ${user.firstName}!</h3>
+                <p>Please use this <a href="${forgotLink}">link</a> to reset your password.</p>
             `
         })
     }
