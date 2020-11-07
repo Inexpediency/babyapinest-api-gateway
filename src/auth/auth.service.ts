@@ -23,6 +23,7 @@ import * as bcrypt from 'bcrypt';
 import _ from 'lodash';
 import { userSensitiveFieldsEnum } from 'src/user/enums/protected-fields.enum';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +48,7 @@ export class AuthService {
         return true;
     }
 
-    async signIn(email, password): Promise<IReadableUser> {
+    async signIn({ email, password }: SignInDto): Promise<IReadableUser> {
         const user = await this.userService.findByEmail(email);
 
         if (user && (await bcrypt.compare(password, user.password))) {
