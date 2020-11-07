@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 
 import { configModule } from './configure.root';
 import { TokenModule } from './token/token.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
     imports: [
@@ -20,6 +21,8 @@ import { TokenModule } from './token/token.module';
         }),
 
         TokenModule,
+
+        MailerModule,
     ],
 })
 export class AppModule {}

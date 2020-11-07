@@ -2,6 +2,7 @@ import { Document } from 'mongoose';
 import { IAddress } from './address.interface';
 
 export interface IUser extends Document {
+    status: string;
     readonly email: string;
     readonly avatar: string;
     readonly avatar_id: string;
