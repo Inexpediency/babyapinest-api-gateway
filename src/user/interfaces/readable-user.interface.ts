@@ -1,8 +1,8 @@
 import { IAddress } from './address.interface';
 
 export interface IReadableUser {
-    readonly email: string;
     status: string;
+    readonly email: string;
     readonly avatar: string;
     readonly avatarId: string;
     readonly lastName: string;

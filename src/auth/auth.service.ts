@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    MethodNotAllowedException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -16,6 +17,8 @@ import { MailerService } from '../mailer/mailer.service';
 import { statusEnum } from '../user/enums/status.enum';
 import moment from 'moment';
 import {ConfigService} from '@nestjs/config';
+import { ITokenPayload } from './interfaces/token-payload.interface';
+import { IReadableUser } from 'src/user/interfaces/readable-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -40,8 +43,31 @@ export class AuthService {
         return true;
     }
 
-    async signIn(email, password): Promise<boolean> {
+    async signIn(email, password): Promise<IReadableUser> {
+        const user = await this.userService.findByEmail(email);
         return;
+    }
+
+    async signUser(user: IUser, withStatusCheck: boolean = true): Promise<string> {
+        if (withStatusCheck && (user.status !== statusEnum.active)) {
+            throw new MethodNotAllowedException();
+        }
+
+        const tokenPayload: ITokenPayload = {
+            _id: user._id,
+            status: user.status,
+            roles: user.roles,
+        }
+        const token = await this.generateToken(tokenPayload);
+        const expiresAt = moment().add(1, 'day').toISOString();
+
+        await this.saveToken({
+            token,
+            expiresAt,
+            uId: user._id,
+        });
+
+        return token;
     }
 
     async confirm(token: string): Promise<IUser> {
@@ -58,7 +84,7 @@ export class AuthService {
         throw new BadRequestException('Confirmation error');
     }
 
-    private async generateToken(data, options?: SignOptions): Promise<string> {
+    private async generateToken(data: ITokenPayload, options?: SignOptions): Promise<string> {
         return this.jwtService.sign(data, options);
     }
 
@@ -80,18 +106,9 @@ export class AuthService {
     }
 
     private async sendConfirmation(user: IUser) {
-        const expiresIn = 60 * 60 * 24 // 1d
-        const tokenPayload = {
-            _id: user._id,
-            status: user.status,
-            roles: user.roles,
-        }
-        const expiresAt = moment().add(1, 'day').toISOString();
-
-        const token = await this.generateToken(tokenPayload, { expiresIn });
+        const token = await this.signUser(user, false);
         const confirmLink = `${this.clientAppUrl}/auth/confirm?token${token}`;
 
-        await this.saveToken(({ token, uId: user._id, expiresAt }));
         await this.mailerService.send({
             from: this.configService.get<string>('SITE_NAME'),
             to: user.email,
